@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Domain Importer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
+        integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous">
+        </script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Domain Importer</h1>
+        <p>Paste your domain list here, one per line:</p>
+        <textarea id="domainList" rows="10"></textarea>
+        <br />
+        <button id="addDomainsButton" class="btn btn-primary">
+            <span id="spinner" class="spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+            Add Domains
+        </button>
+        <button id="clearButton" class="btn btn-danger">
+            Clear
+        </button>
+        <br />
+        <div class="progress">
+            <div id="progressBar" class="progress-bar progress-bar-animated" role="progressbar" style="width: 0%"
+                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div id="result">
+            <div class="column">
+                <p>Successful domains:</p>
+                <ul id="successList"></ul>
+            </div>
+            <div class="column">
+                <p>Failed domains:</p>
+                <ul id="failList"></ul>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#clearButton").on("click", function () {
+                $("#domainList").val("");
+                $("#successList").empty();
+                $("#failList").empty();
+                $("#progressBar").css("width", "0%");
+                $("#progressBar").html("0%");
+            });
+        });
+    </script>
+</body>
+
+</html>
