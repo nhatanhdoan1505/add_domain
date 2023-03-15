@@ -7,18 +7,16 @@ function isValidDomain(domain) {
   return domainRegex.test(domain);
 }
 
-function emitResult(result, successDomains, failedDomains, processNumber) {
-  result = result.map((r) => ({ name: r.error ? r.error.domain : r.name, status: r.error ? false : r.verified }));
+function emitResult(result, processNumber) {
+  result = result.map((r) => ({ name: r.name, status: r.verified }));
   eventEmitter.emit("addProcess", {
     process: processNumber,
-    successDomains: [...successDomains, ...result.filter((r) => r.status).map((r) => r.name)],
-    failedDomains: [...failedDomains, ...result.filter((r) => !r.status).map((r) => r.name)],
+    successDomains: [...result.filter((r) => r.status).map((r) => r.name)],
+    failedDomains: [...result.filter((r) => !r.status).map((r) => r.name)],
   });
 }
 
 function processArrayInChunks(projectId, array, chunkSize, addCallback) {
-  const successDomains = [];
-  const failedDomains = [];
   return async (callbackHandler) => {
     for (let i = 0; i < array.length; i += chunkSize) {
       const chunk = array.slice(i, i + chunkSize);
@@ -26,7 +24,7 @@ function processArrayInChunks(projectId, array, chunkSize, addCallback) {
       let result = await Promise.all(addPromise);
       let processNumber = Math.floor(((i + chunkSize) / array.length) * 100);
       if (processNumber > 100) processNumber = 100;
-      callbackHandler(result, successDomains, failedDomains, processNumber);
+      callbackHandler(result, processNumber);
     }
   };
 }

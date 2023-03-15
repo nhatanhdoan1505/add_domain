@@ -5,7 +5,7 @@ $(document).ready(function () {
   const successList = document.getElementById("successList");
   const failedList = document.getElementById("failList");
   const path = window.location.pathname;
-  const projectId = path.substring(1);
+  const projectId = path.substring(1).split("/")[1];
 
   function editDom({ process, successDomains, failedDomains }) {
     progressBar.style.width = `${process}%`;
@@ -13,6 +13,11 @@ $(document).ready(function () {
     successList.innerHTML += successDomains.map((domain) => `<li>${domain.trim()}</li>`).join("");
     failedList.innerHTML += failedDomains.map((domain) => `<li>${domain.trim()}</li>`).join("");
   }
+
+  // Register "process" event listener outside of the "addDomainsButton" click handler
+  socket.on("process", ({ process, successDomains, failedDomains }) => {
+    editDom({ process, successDomains, failedDomains });
+  });
 
   $("#addDomainsButton").click(function () {
     const domain = $("#domainList").val();
@@ -26,9 +31,8 @@ $(document).ready(function () {
 
     socket.emit("addDomain", { domain: domains, projectId });
 
-    socket.on("process", ({ process, successDomains, failedDomains }) => {
-      editDom({ process, successDomains, failedDomains });
-    });
+    // Remove "done" event listener added in previous "addDomainsButton" click
+    socket.off("done");
 
     socket.on("done", () => {
       $("#spinner").removeClass("spinner-border");
